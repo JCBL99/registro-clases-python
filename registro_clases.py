@@ -5,7 +5,7 @@ import os
 class RegistroClases:
     def __init__(self, archivo_excel='Registro_clases.xlsx'):
         self.archivo_excel = archivo_excel
-        print(f'📁 Inicializando registro en: {self.archivo_excel}')
+        self.inicializar_archivo()
 
     def inicializar_archivo(self):
         '''Crear el archivo Excel con encabezados si no existe'''
@@ -48,8 +48,61 @@ class RegistroClases:
         except Exception as e:
             print(f"❌ Error al agregar la clase: {e}")
 
+    def mostrar_registro(self):
+        '''Muestra todas las clases registradas'''
+        try:
+            wb = load_workbook(self.archivo_excel)
+            ws = wb.active
+
+            print("\n📋 REGISTRO DE CLASES:")
+            print("-" * 50)
+
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[0]: # Si la celda de nombre no está vacía
+                    print(f'🏫 : {row[0]}')
+                    print(f'📅: {row[1]}, ⏰: {row[2]}Min | 💰: ${row[3]}/h')
+                    print(f'💵 Total: ${row[4] if row[4] else 'Calculando...'}')
+                    print('-' * 30)
+
+        except Exception as e:
+            print(f"❌ Error al leer el registro: {e}")
+
+
+def main():
+    registro = RegistroClases()
+
+    while True:
+        print("\n" + "="*50)
+        print("       SISTEMA DE REGISTRO DE CLASES")
+        print("="*50)
+        print("1. Agregar nueva clase")
+        print("2. Ver registro completo")
+        print("3. Salir")
+
+        opcion = input('\nSelecciona una opción (1-3): ')
+        if opcion == '1':
+            print("\n➕ NUEVA CLASE")
+            nombre = input("Nombre de la clase: ")
+            fecha = input("Fecha (DD--MM--YYYY): ")
+            duracion = float(input("Duración en minutos: "))
+            valor = float(input("Valor por hora: $"))
+
+            if registro.agregar_clase(nombre, fecha, duracion, valor):
+                print("✅ Clase agregada exitosamente!")
+            else:
+                print("❌ Error al agregar la clase")
+
+        elif opcion == '2':
+            registro.mostrar_registro()
+
+        elif opcion == '3':
+            print("👋 ¡Hasta luego!")
+            break
+
+        else:
+            print("❌ Opción no válida")
 
 if __name__ == '__main__':
-    registro = RegistroClases()
-    registro.inicializar_archivo()
+    main()
+    #registro.inicializar_archivo()
 
